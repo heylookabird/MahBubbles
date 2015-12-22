@@ -6,7 +6,7 @@ public class Bubble : MonoBehaviour {
 	public float xAcc = .005f;
 	public float maxXVel = .1f;
 
-	public BubbleFactory factory;
+	bool increasing = true;
 
 	int currInterval;
 	public int redInterval, yellowInterval, greenInterval;
@@ -32,11 +32,7 @@ public class Bubble : MonoBehaviour {
 		color = COLOR.RED;
 		image = gameObject.GetComponent<SpriteRenderer> ();
 		//randomize start
-		/*if (Random.Range (0, 1) < 0.5f) {
-			xAcc = -xAcc;
-		}*/
 		xAcc = Random.Range (-xAcc, xAcc);
-		//randFrame = Random.Range (randFrameMin, randFrameMax);
 
 		Sprite[] all = Resources.LoadAll<Sprite> ("Button");
 		red = all[8];
@@ -60,21 +56,29 @@ public class Bubble : MonoBehaviour {
 
 	public void UpdateColor(){
 		if (stateTime == currInterval) {
-
-			if (color == COLOR.RED) {
+			//changed it to be more gradual/forgiving
+			if (color == COLOR.RED || color == COLOR.GREEN) {
 				color = COLOR.YELLOW;
 				image.sprite = yellow;
 				currInterval = yellowInterval;
 			} else if (color == COLOR.YELLOW) {
-				color = COLOR.GREEN;
-				image.sprite = green;
-				currInterval = greenInterval;
+				if(increasing){
+					color = COLOR.GREEN;
+					image.sprite = green;
+					currInterval = greenInterval;
+					increasing = false;
+				}else{
+					color = COLOR.RED;
+					image.sprite = red;
+					currInterval = redInterval;
+					increasing = true;
+				}
 			}
-			else{
-				color = COLOR.RED;
+			/*else if (color == COLOR.GREEN){
+				color = COLOR.;
 				image.sprite = red;
 				currInterval = redInterval;
-			}
+			}*/
 
 			stateTime = 0;
 		}
