@@ -11,20 +11,19 @@ public class BubbleFactory : MonoBehaviour {
 	int bubblesPoppedTotal = 0;
 	int score = 0;
 	int streak = 0;
-	int currentBubble = 0;
-	Bubble[] bubbles;
+	int currentBubbleIndex = 0;
+	Rigidbody2D[] bubbles;
 	bool active;
 	static BubbleFactory instance;
 
+	public MenuHandler menus;
 	public int NORMAL_REWARD = 100;
-
-	public Play playButton;
-
+	public int StartLevel;
 	public Rigidbody2D bubble;
 	// Use this for initialization
 	void Start () {
 		instance = this;
-		Bubble[] bubbles = new Bubble[100];
+		bubbles = new Rigidbody2D[100];
 		GenerateNewBubble ();
 		active = false;
 	}
@@ -33,7 +32,7 @@ public class BubbleFactory : MonoBehaviour {
 	}
 
 	void Update(){
-		PhoneTouch ();
+		//PhoneTouch ();
 	}	
 	// Update is called once per frame
 	void FixedUpdate () {
@@ -44,7 +43,7 @@ public class BubbleFactory : MonoBehaviour {
 				timeLeft--;
 			}
 
-			if(timeLeft == 0){
+			if(timeLeft <= 0){
 				GameOver();
 			}
 		}
@@ -67,16 +66,18 @@ public class BubbleFactory : MonoBehaviour {
 		bubblesPoppedTotal = 0;
 		timeLeft = gametime;
 		statetime = 0;
-		level = 10;
+		level = StartLevel;
 		score = 0;
 		streak = 0;
 
-		for (int i = 0; i < currentBubble; i++) {
-			Destroy(bubbles[i]);
+		for (int i = 0; i < currentBubbleIndex; i++) {
+			if(bubbles[i] != null){
+			Destroy(bubbles[i].gameObject);
 			bubbles[i] = null;
+			}
 		}
 
-		currentBubble = 0;
+		currentBubbleIndex = 0;
 
 	}
 
@@ -88,7 +89,7 @@ public class BubbleFactory : MonoBehaviour {
 
 	void GameOver(){
 		active = false;
-		playButton.SetMenuState ();
+		menus.SetMenuState ();
 	}
 
 	void CheckLevelClear(){
@@ -101,13 +102,6 @@ public class BubbleFactory : MonoBehaviour {
 
 	public void ExpireBubble(Bubble b){
 		bubblesPoppedLevel++;
-
-		if (active) {
-			if (b.transform.position.x > -10 || b.transform.position.x < 10) {
-				timeLeft -= 2;
-			}
-		}
-
 		RemoveBubble (b);
 		Destroy (b.gameObject);
 	}
@@ -118,10 +112,10 @@ public class BubbleFactory : MonoBehaviour {
 
 	bool RemoveBubble(Bubble b){
 		bool found = false;
-		for(int i = 0; i < currentBubble; i++){
-			if(b == bubbles[i]){
+		for(int i = 0; i < currentBubbleIndex; i++){
+			if(b.GetComponent<Rigidbody2D>() == bubbles[i]){
 				found = true;
-				currentBubble--;
+				currentBubbleIndex--;
 			}
 			if(found){
 				bubbles[i] = bubbles[i+1];
@@ -139,49 +133,65 @@ public class BubbleFactory : MonoBehaviour {
 		return timeLeft;
 	}
 
-	public void PopBubble(Bubble b){
+	public int PopBubble(Bubble b){
+		int reward = 0;
 		if (active) {
 			if (b.GetColor () == "green") {
-				RewardPerfect (2f);
+				reward = RewardPerfect (2f);
 			} else if (b.GetColor () == "yellow") {
-				RewardNormal ();
+				reward = RewardNormal ();
 			} else {
-				RewardNothing ();
+				reward = RewardNothing ();
 			}
 		}
 		bubblesPoppedLevel++;
 		bubblesPoppedTotal++;
 		RemoveBubble (b);
 		Destroy (b.gameObject);
+
+		return reward;
 	}
 
-	void RewardPerfect(float mult){
-		timeLeft += 5;
+	int RewardPerfect(float mult){
+		timeLeft += 1;
 		int reward = (int)(NORMAL_REWARD * 1.5f);
-		score += reward;
+		streak++;
 
 		if (streak > 3) {
-			score += reward * (streak/10);
+			reward += (int)(reward * (streak/5f));
+			timeLeft += 2;
 		}
+
+		score += reward;
+
+		return reward;
 	}
 
-	void RewardNormal(){
-		timeLeft += 2;
-		score += NORMAL_REWARD;
+	int RewardNormal(){
+		int reward = NORMAL_REWARD;
+		score += reward;
 		streak = 0;
+
+		return reward;
 	}
 
-	void RewardNothing(){
+	int RewardNothing(){
+		int reward = NORMAL_REWARD / 2;
 		streak = 0;
-		score += NORMAL_REWARD / 2;
+		score += reward;
+
+		return reward;
 	}
 	void GenerateNewBubble(){
 		Vector3 pos = new Vector3 (Random.Range (-8, 8), Random.Range(-6, -10), 0);
-		Instantiate (bubble, pos, Quaternion.identity).name = "Bubble";
+		Rigidbody2D b = (Rigidbody2D)Instantiate (bubble, pos, Quaternion.identity);
+		b.gameObject.name = "Bubble";
+		bubbles [currentBubbleIndex] = b;
 		bubblesGeneratedLevel++;
 		bubblesGeneratedTotal++;
+		currentBubbleIndex++;
 	}
-
+	/* Touch input on Android seems to work using just MouseDown, keeping this here in case it doesn't work on iphone
 	void PhoneTouch(){
 		if (Input.touchCount > 0) {
 			Touch touch = Input.GetTouch (0);
@@ -207,5 +217,5 @@ public class BubbleFactory : MonoBehaviour {
 
 	void HandleMenuOption(GameObject obj){
 
-	}
+	}*/
 }

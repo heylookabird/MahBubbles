@@ -2,9 +2,11 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\BubbleFactory.cs">
     <Files>
-      <File FileName="Assets\Scripts\BubbleFactory.cs" Line="70" Column="13" />
-      <File FileName="Assets\Scripts\Bubble.cs" Line="59" Column="45" />
-      <File FileName="Assets\Scripts\Play.cs" Line="15" Column="31" />
+      <File FileName="Assets\Scripts\BubbleFactory.cs" Line="170" Column="21" />
+      <File FileName="Assets\Scripts\Bubble.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Play.cs" Line="14" Column="8" />
+      <File FileName="Assets\Scripts\Instructions.cs" Line="26" Column="34" />
+      <File FileName="Assets\Scripts\MenuHandler.cs" Line="39" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

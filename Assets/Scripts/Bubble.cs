@@ -49,7 +49,7 @@ public class Bubble : MonoBehaviour {
 	}
 
 	void CheckTopBound(){
-		if (transform.position.y > 7) {
+		if (transform.position.y > 6) {
 			BubbleFactory.GetInstance().ExpireBubble(this);
 		}
 	}
@@ -102,12 +102,13 @@ public class Bubble : MonoBehaviour {
 	}
 
 	public string GetColor(){
-		Debug.Log("Color: " + color.ToString().ToLower());
 		return color.ToString().ToLower();
 	}
 
 	void OnMouseDown(){
-		BubbleFactory.GetInstance ().PopBubble (this);
+		int reward = BubbleFactory.GetInstance ().PopBubble (this);
+
+		Debug.Log ("Rewarded: " + reward);
 	}
 
 }
